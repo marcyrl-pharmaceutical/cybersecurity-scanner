@@ -140,13 +140,14 @@ function showResult(r, raw){
   var m = map[r.verdict] || map.review;
   var flagged = (r.malicious||0) + (r.suspicious||0);
   var C = 2 * Math.PI * 52;
+  var uh = !!r.source;
   var html =
     '<div class="panel"><div class="res">'+
     '<svg class="gauge" viewBox="0 0 120 120" role="img" aria-label="'+flagged+' من '+r.total+'">'+
       '<circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="10"/>'+
       '<circle cx="60" cy="60" r="52" fill="none" stroke="'+m.col+'" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>'+
-      '<text x="60" y="62" text-anchor="middle" font-size="30" font-weight="700">'+flagged+'</text>'+
-      '<text x="60" y="84" text-anchor="middle" font-size="12">/ '+r.total+'</text>'+
+      '<text x="60" y="62" text-anchor="middle" font-size="30" font-weight="700">'+(uh?'!':flagged)+'</text>'+
+      '<text x="60" y="84" text-anchor="middle" font-size="12">'+(uh?(r.source==='blocklist'?'قاعدة التهديدات':'URLhaus'):'/ '+r.total)+'</text>'+
     '</svg>'+
     '<div class="verdict"><p class="v '+m.c+'">'+m.t+'</p>'+(m.h?'<p class="hint">'+m.h+'</p>':'')+'</div></div>'+
     '<div class="target" id="tg"></div>'+
@@ -155,6 +156,7 @@ function showResult(r, raw){
       '<div class="stat"><b>'+(r.suspicious||0)+'</b><span>مشبوه</span></div>'+
       '<div class="stat"><b>'+((r.harmless||0)+(r.undetected||0))+'</b><span>سليم</span></div>'+
     '</div></div>';
+  if(uh) html = html.replace(/<div class="stats">[\s\S]*$/, '</div>');
   $("out").innerHTML = '<div class="res-wrap">'+html+'</div>';
   $("tg").textContent = raw;
   $("out").scrollIntoView({behavior:"smooth", block:"nearest"});
